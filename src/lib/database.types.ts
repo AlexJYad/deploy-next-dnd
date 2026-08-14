@@ -143,6 +143,95 @@ export type Database = {
         }
         Relationships: []
       }
+      map_markers: {
+        Row: {
+          icon_type: string | null
+          id: string
+          link: string | null
+          map_id: string
+          min_role: string | null
+          target_map_id: string | null
+          title: string
+          x: number
+          y: number
+        }
+        Insert: {
+          icon_type?: string | null
+          id?: string
+          link?: string | null
+          map_id: string
+          min_role?: string | null
+          target_map_id?: string | null
+          title: string
+          x: number
+          y: number
+        }
+        Update: {
+          icon_type?: string | null
+          id?: string
+          link?: string | null
+          map_id?: string
+          min_role?: string | null
+          target_map_id?: string | null
+          title?: string
+          x?: number
+          y?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "map_markers_map_id_fkey"
+            columns: ["map_id"]
+            isOneToOne: false
+            referencedRelation: "maps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "map_markers_target_map_id_fkey"
+            columns: ["target_map_id"]
+            isOneToOne: false
+            referencedRelation: "maps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maps: {
+        Row: {
+          height: number
+          id: string
+          image_url: string
+          min_role: string | null
+          parent_map_id: string | null
+          title: string
+          width: number
+        }
+        Insert: {
+          height: number
+          id?: string
+          image_url: string
+          min_role?: string | null
+          parent_map_id?: string | null
+          title: string
+          width: number
+        }
+        Update: {
+          height?: number
+          id?: string
+          image_url?: string
+          min_role?: string | null
+          parent_map_id?: string | null
+          title?: string
+          width?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maps_parent_map_id_fkey"
+            columns: ["parent_map_id"]
+            isOneToOne: false
+            referencedRelation: "maps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           created_at: string | null
