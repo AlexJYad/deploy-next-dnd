@@ -31,7 +31,7 @@ export default async function MapsPage() {
    );
 
    return (
-      <div className="flex-1 w-full min-h-0">
+      <div className="relative flex-1 min-h-0 w-full">
          <MapViewer initialMap={{ ...worldMap, markers: visibleMarkers }} />
       </div>
    );

@@ -43,7 +43,7 @@ export default function MapViewer({ initialMap }: { initialMap: MapData }) {
    const closeTop = () => setStack((prev) => prev.slice(0, -1));
 
    return (
-      <div className="relative h-full w-full">
+      <div className="absolute inset-0">
          <LeafletMap map={stack[0]} onMarkerClick={openChildMap} />
 
          {stack.length > 1 && (
