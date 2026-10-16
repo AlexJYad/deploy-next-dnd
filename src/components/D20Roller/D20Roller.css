@@ -1,0 +1,192 @@
+/* ==========================================================================
+   D20 DICE ROLLER
+   Clickable SVG die with roll animation, crit/fail glow and dark theme.
+   Markup: components/D20Roller.tsx
+   ========================================================================== */
+
+/* ==========================================================================
+   1. DESIGN TOKENS
+   ========================================================================== */
+
+/* --- 1.1 Light theme (default) ------------------------------------------ */
+:root {
+   /* Die surface */
+   --d20-face-light: var(--bg-0); /* gradient start */
+   --d20-face-dark: var(--bg-2); /* gradient end */
+   --d20-center: rgba(255, 255, 255, 0.55); /* central triangle highlight */
+
+   /* Lines and text */
+   --d20-line: var(--accent);
+   --d20-number: #1a1a1a;
+
+   /* Effects */
+   --d20-shadow: rgba(0, 0, 0, 0.35);
+   --d20-crit: var(--nature); /* natural 20 glow */
+   --d20-fail: var(--danger); /* natural 1 glow */
+   --d20-focus: rgba(0, 0, 0, 0.5);
+}
+
+/* --- 1.2 Dark theme ------------------------------------------------------
+   Applied when an ancestor has .dark / [data-theme="dark"],
+   or when the die itself has the .dark modifier.
+   ------------------------------------------------------------------------ */
+.dark .d20-die,
+[data-theme="dark"] .d20-die,
+.d20-die.dark {
+   --d20-face-light: #3a3a3a;
+   --d20-face-dark: #0d0d0d;
+   --d20-center: rgba(255, 255, 255, 0.08);
+   --d20-line: #c9a227;
+   --d20-number: #e8c547;
+   --d20-shadow: rgba(0, 0, 0, 0.7);
+   --d20-focus: rgba(232, 197, 71, 0.8);
+}
+
+/* ==========================================================================
+   2. LAYOUT
+   ========================================================================== */
+
+/* --- 2.1 Wrapper -------------------------------------------------------- */
+.d20 {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   gap: 8px;
+   margin-bottom: 16px;
+}
+
+/* --- 2.2 Status text under the die --------------------------------------
+   Reserves one line so the layout does not jump when the text changes.
+   ------------------------------------------------------------------------ */
+.d20-hint {
+   min-height: 1.5em;
+   text-align: center;
+}
+
+/* ==========================================================================
+   3. DIE (BUTTON)
+   ========================================================================== */
+
+/* --- 3.1 Base ----------------------------------------------------------- */
+.d20-die {
+   width: 140px;
+   height: 140px;
+   padding: 0;
+   border: 0;
+   background: none;
+   cursor: pointer;
+   filter: drop-shadow(0 6px 6px var(--d20-shadow));
+   transition:
+      transform 0.15s,
+      filter 0.15s;
+}
+
+.d20-die svg {
+   width: 100%;
+   height: 100%;
+}
+
+/* --- 3.2 Interaction states --------------------------------------------- */
+.d20-die:hover:not(:disabled) {
+   transform: scale(1.06) rotate(-4deg);
+}
+
+.d20-die:active:not(:disabled) {
+   transform: scale(0.96);
+}
+
+.d20-die:disabled {
+   cursor: default;
+}
+
+.d20-die:focus-visible {
+   outline: 3px solid var(--d20-focus);
+   outline-offset: 6px;
+   border-radius: 12px;
+}
+
+/* --- 3.3 Roll result states --------------------------------------------- */
+.d20-die.crit {
+   filter: drop-shadow(0 0 5px var(--d20-crit));
+}
+
+.d20-die.fail {
+   filter: drop-shadow(0 0 5px var(--d20-fail));
+}
+
+.d20-die.rolling {
+   animation: d20-tumble 0.6s ease-out;
+}
+
+/* ==========================================================================
+   4. SVG PARTS
+   ========================================================================== */
+
+/* --- 4.1 Gradient stops ------------------------------------------------- */
+.d20-stop-light {
+   stop-color: var(--d20-face-light);
+}
+
+.d20-stop-dark {
+   stop-color: var(--d20-face-dark);
+}
+
+/* --- 4.2 Outline and edges ---------------------------------------------- */
+.d20-body,
+.d20-edges {
+   stroke: var(--d20-line);
+}
+
+/* --- 4.3 Center face and number ----------------------------------------- */
+.d20-center {
+   fill: var(--d20-center);
+}
+
+.d20-number {
+   fill: var(--d20-number);
+}
+
+/* ==========================================================================
+   5. ANIMATION
+   ========================================================================== */
+
+/* --- 5.1 Tumble keyframes ------------------------------------------------
+   Duration (0.6s) must match the roll: 10 ticks x 60ms in D20Roller.tsx.
+   ------------------------------------------------------------------------ */
+@keyframes d20-tumble {
+   0% {
+      transform: rotate(0) translateY(0);
+   }
+   25% {
+      transform: rotate(120deg) translateY(-18px) scale(1.08);
+   }
+   50% {
+      transform: rotate(240deg) translateY(0);
+   }
+   75% {
+      transform: rotate(320deg) translateY(-8px);
+   }
+   100% {
+      transform: rotate(360deg) translateY(0);
+   }
+}
+
+/* ==========================================================================
+   6. ACCESSIBILITY
+   ========================================================================== */
+
+/* --- 6.1 Reduced motion --------------------------------------------------
+   Disables tumbling and hover/press transforms for users who opt out.
+   ------------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+   .d20-die.rolling {
+      animation: none;
+   }
+
+   .d20-die,
+   .d20-die:hover:not(:disabled),
+   .d20-die:active:not(:disabled) {
+      transition: none;
+      transform: none;
+   }
+}
