@@ -1,5 +1,5 @@
 .master-form {
-   max-width: 720px;
+   max-width: 350px;
    margin: 0 auto;
    padding: 24px;
    display: flex;
@@ -59,7 +59,6 @@
    font-size: 13px;
 }
 
-/* Группы полей */
 .master-form fieldset {
    border: 1px solid #e5e7eb;
    border-radius: 12px;
@@ -79,7 +78,6 @@
    color: #7c3aed;
 }
 
-/* Здоровье/мана и характеристики — сетка вместо колонки */
 .master-form fieldset label {
    display: flex;
    flex-direction: column;
@@ -147,7 +145,7 @@
 }
 
 .master-form .editable-row .skill-value-input {
-   width: 90px;
+   width: 50px;
    flex: none;
 }
 
@@ -170,4 +168,26 @@
    padding: 4px 10px;
    cursor: pointer;
    font-size: 13px;
+}
+
+@media (max-width: 480px) {
+   .master-form {
+      max-width: 100%;
+      padding: 16px;
+      gap: 16px;
+   }
+
+   .master-form fieldset {
+      padding: 12px;
+      min-width: 0;
+   }
+
+   .master-form .editable-row {
+      gap: 6px;
+   }
+
+   .master-form .editable-row .quantity-input {
+      width: 48px;
+      flex-basis: 48px;
+   }
 }

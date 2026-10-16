@@ -21,7 +21,7 @@ export default async function ProfilePage() {
       :  [];
 
    return (
-      <div className="flex">
+      <div className="flex flex-col lg:flex-row">
          <CharacterSheet character={character} />
          <CharacterForm
             character={{

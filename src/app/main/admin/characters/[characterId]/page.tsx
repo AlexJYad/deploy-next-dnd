@@ -31,7 +31,7 @@ export default async function AdminCharacterPage({
    }
 
    return (
-      <div className="flex">
+      <div className="flex flex-col lg:flex-row">
          <CharacterSheet character={character} />
          <MasterCharacterForm character={character} />;
       </div>
