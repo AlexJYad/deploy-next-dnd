@@ -27,7 +27,7 @@ export default async function ProfilePage() {
             character={{
                ...character,
                name: character.name ?? "",
-               notes: character.notes ?? null, // notes и так string | null в форме — ок
+               notes: character.notes ?? null,
                inventory,
             }}
          />

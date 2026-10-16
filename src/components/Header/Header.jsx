@@ -4,13 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import LogoutButton from "../LogoutButton/LogoutButton";
+import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import "./Header.css";
 
 export default function Header({ user }) {
-   console.log("Header user:", user);
    const pathname = usePathname();
    const [openMenu, setOpenMenu] = useState(null);
+   const [mobileOpen, setMobileOpen] = useState(false);
    const navRef = useRef(null);
+   const headerRef = useRef(null);
 
    const plainLinks = [{ href: "/main", label: "Главная" }];
 
@@ -80,10 +82,18 @@ export default function Header({ user }) {
       },
    ];
 
+   function closeAll() {
+      setOpenMenu(null);
+      setMobileOpen(false);
+   }
+
    useEffect(() => {
       function handleClickOutside(event) {
          if (navRef.current && !navRef.current.contains(event.target)) {
             setOpenMenu(null);
+         }
+         if (headerRef.current && !headerRef.current.contains(event.target)) {
+            setMobileOpen(false);
          }
       }
       document.addEventListener("mousedown", handleClickOutside);
@@ -93,22 +103,52 @@ export default function Header({ user }) {
 
    useEffect(() => {
       setOpenMenu(null);
+      setMobileOpen(false);
    }, [pathname]);
 
    return (
-      <header className="header">
+      <header className="header" ref={headerRef}>
          <div className="header-inner">
-            <Link href="/" className="header-logo">
-               <span className="header-logo-mark" />
+            <Link href="/" className="header-logo" onClick={closeAll}>
+               <svg
+                  className="header-logo-mark"
+                  viewBox="0 0 32 32"
+                  fill="none"
+                  aria-hidden="true"
+               >
+                  {/* закрашенные грани */}
+                  <g fill="currentColor" stroke="none">
+                     <path d="M16 8 23 21H9Z" />
+                     <path d="M16 2V8L4 9Z" />
+                     <path d="M28 9 23 21 28 23Z" />
+                     <path d="M9 21 4 23 16 30Z" />
+                  </g>
+
+                  {/* контур */}
+                  <g
+                     stroke="currentColor"
+                     strokeWidth="1.8"
+                     strokeLinejoin="round"
+                     strokeLinecap="round"
+                  >
+                     <path d="M16 2 28 9v14L16 30 4 23V9L16 2Z" />
+                     <path d="M16 8 23 21H9L16 8Z" />
+                     <path d="M16 8V2M16 8 4 9M16 8 28 9M9 21 4 9M9 21 4 23M9 21l7 9M23 21l5-12M23 21l5 2M23 21l-7 9" />
+                  </g>
+               </svg>
                <span></span>
             </Link>
 
-            <nav className="header-nav" ref={navRef}>
+            <nav
+               className={`header-nav ${mobileOpen ? "open" : ""}`}
+               ref={navRef}
+            >
                {plainLinks.map((link) => (
                   <Link
                      key={link.href}
                      href={link.href}
                      className={`header-link ${pathname === link.href ? "active" : ""}`}
+                     onClick={closeAll}
                   >
                      {link.label}
                   </Link>
@@ -154,7 +194,7 @@ export default function Header({ user }) {
                                     key={item.href}
                                     href={item.href}
                                     className={`header-dropdown-item ${pathname === item.href ? "active" : ""}`}
-                                    onClick={() => setOpenMenu(null)}
+                                    onClick={closeAll}
                                  >
                                     {item.label}
                                  </Link>
@@ -170,6 +210,7 @@ export default function Header({ user }) {
                      key={link.href}
                      href={link.href}
                      className={`header-link ${pathname === link.href ? "active" : ""}`}
+                     onClick={closeAll}
                   >
                      {link.label}
                   </Link>
@@ -177,8 +218,18 @@ export default function Header({ user }) {
             </nav>
 
             <div className="header-actions">
+               <ThemeToggle />
                <div className="header-divider" />
                <LogoutButton className="header-logout" />
+               <button
+                  type="button"
+                  className="header-theme header-burger"
+                  onClick={() => setMobileOpen((prev) => !prev)}
+                  aria-label="Меню"
+                  aria-expanded={mobileOpen}
+               >
+                  <i className={`bi ${mobileOpen ? "bi-x-lg" : "bi-list"}`} />
+               </button>
             </div>
          </div>
       </header>
