@@ -1,0 +1,483 @@
+/* ==========================================================================
+   SPELL CARD
+   Parchment spell card: light/dark side, pennant badge, ruled text that
+   collapses to two lines, stat tiles and the admin holder editor.
+   Markup: components/spells/SpellCard.tsx
+           components/spells/HolderEditor.tsx  (admin block)
+           components/spells/SpellList.tsx     (.spell-toggle filters)
+   Theme:  built on global tokens (--bg-*, --accent, --border, --shadow-*,
+           --font-*, --size-*), so the card follows the site light/dark theme.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. DESIGN TOKENS
+   ========================================================================== */
+
+/* --- 1.1 Base (light theme) --------------------------------------------- */
+.spell-card {
+   /* Fonts */
+   --spell-font-title: var(
+      --font-heading
+   ); /* calligraphic: var(--font-display) */
+   --spell-font-label: var(--font-decorative);
+
+   /* Geometry */
+   --spell-line: 2rem; /* line height = ruled-line step */
+   --spell-head-lift: 1.1rem; /* how far the header sticks out above the border */
+
+   /* Colors derived from global tokens */
+   --spell-ink: var(--accent); /* borders, ruled lines, outlines */
+   --spell-plate: var(--bg-0); /* title plate, tiles, inputs */
+   --spell-paper: color-mix(in srgb, var(--spell-accent) 10%, var(--bg-2));
+   --spell-warn: var(--danger);
+   --spell-on-accent: #fff; /* text on the colored pennant */
+
+   /* Silences the global ul li::before diamonds inside the card */
+   --marker-content: none;
+}
+
+/* --- 1.2 Sides ----------------------------------------------------------- */
+.spell-card[data-side="light"] {
+   --spell-accent: #b8892b; /* gold */
+}
+.spell-card[data-side="dark"] {
+   --spell-accent: #6b4c9a; /* violet */
+}
+
+/* --- 1.3 Dark theme -------------------------------------------------------
+   Applied when an ancestor has .dark (next-themes, attribute="class").
+   Accents are lightened so they stay readable on dark paper.
+   ------------------------------------------------------------------------ */
+.dark .spell-card {
+   --spell-warn: color-mix(in srgb, var(--danger) 55%, #fff);
+}
+.dark .spell-card[data-side="light"] {
+   --spell-accent: #d4a73c;
+}
+.dark .spell-card[data-side="dark"] {
+   --spell-accent: #9b7bd0;
+}
+
+/* ==========================================================================
+   2. LAYOUT
+   ========================================================================== */
+
+/* --- 2.1 Card ------------------------------------------------------------ */
+.spell-card {
+   position: relative;
+   margin-top: 1.25rem; /* room for the header sticking out above */
+   padding: 2.25rem 1.5rem 1.5rem;
+   border: 4px solid var(--spell-ink);
+   border-radius: 16px;
+   background: var(--spell-paper);
+   color: var(--foreground);
+   box-shadow: var(--shadow-soft);
+   transition:
+      background 0.2s,
+      border-color 0.2s;
+}
+
+/* Extra top space when the pennant hangs from the border */
+.spell-card--flag {
+   padding-top: 3.5rem;
+}
+
+/* ==========================================================================
+   3. HEADER
+   ========================================================================== */
+
+/* --- 3.1 Header row ------------------------------------------------------ */
+.spell-card .spell-head {
+   position: absolute;
+   top: calc(var(--spell-head-lift) * -1);
+   left: 1.25rem;
+   right: 1.25rem;
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+}
+
+/* --- 3.2 Title plate ----------------------------------------------------- */
+.spell-card .spell-title {
+   min-width: 0;
+   margin: 0;
+   padding: 0.15rem 1rem;
+   border: 3px solid var(--spell-ink);
+   background: var(--spell-plate);
+   font-family: var(--spell-font-title);
+   font-size: var(--size-2xl);
+   line-height: 1.3;
+}
+
+/* --- 3.3 Side switch (single round button) ------------------------------- */
+.spell-card .spell-side-btn {
+   margin-left: auto;
+   width: 2rem;
+   height: 2rem;
+   border: 3px solid var(--spell-ink);
+   border-radius: 50%;
+   background: var(--spell-accent);
+   font-size: var(--size-md);
+   line-height: 1;
+   cursor: pointer;
+   transition: transform 0.15s;
+}
+
+.spell-card .spell-side-btn:hover {
+   transform: scale(1.08);
+}
+
+/* --- 3.4 Pennant (mana for admin, skill for player) ----------------------
+   Takes no space in the header row; hangs from the border.
+   The outline is four shifted drop-shadows, because border would be
+   clipped by clip-path.
+   ------------------------------------------------------------------------ */
+.spell-card .spell-pennant-wrap {
+   position: absolute;
+   top: var(--spell-head-lift);
+   right: 0;
+   filter: drop-shadow(3px 0 0 var(--spell-ink))
+      drop-shadow(-3px 0 0 var(--spell-ink))
+      drop-shadow(0 3px 0 var(--spell-ink))
+      drop-shadow(0 -3px 0 var(--spell-ink));
+}
+
+/* Shift left so it does not cover the side switch (2rem + gap) */
+.spell-card .spell-side-btn + .spell-pennant-wrap {
+   right: 2.5rem;
+}
+
+.spell-card .spell-pennant {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   min-width: 3.2rem;
+   padding: 0.4rem 0.6rem 1.1rem;
+   background: color-mix(in srgb, var(--spell-accent) 78%, #000);
+   color: var(--spell-on-accent);
+   clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 0.6rem), 0 100%);
+}
+
+/* Global span { color } would override the inherited color */
+.spell-card .spell-pennant span,
+.spell-card .spell-pennant b {
+   color: inherit;
+}
+
+.spell-card .spell-pennant span {
+   font-family: var(--spell-font-label);
+   font-style: italic;
+   font-size: var(--size-xs);
+   line-height: 1.1;
+   opacity: 0.9;
+}
+
+.spell-card .spell-pennant b {
+   font-family: var(--spell-font-title);
+   font-size: var(--size-xl);
+   line-height: 1.1;
+}
+
+/* ==========================================================================
+   4. TEXT BLOCK
+   ========================================================================== */
+
+/* --- 4.1 Ruled lines ------------------------------------------------------
+   Every child has a fixed line-height, so the lines always match the text.
+   ------------------------------------------------------------------------ */
+.spell-card .spell-lines {
+   line-height: var(--spell-line);
+   background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(var(--spell-line) - 2px),
+      var(--spell-ink) calc(var(--spell-line) - 2px),
+      var(--spell-ink) var(--spell-line)
+   );
+}
+
+/* Reset global p / h3 / li margins, paddings and justify */
+.spell-card .spell-lines > *,
+.spell-card .spell-lines li {
+   margin: 0;
+   padding: 0;
+   line-height: var(--spell-line);
+   text-align: left;
+   hyphens: manual;
+}
+
+/* --- 4.2 Typography ------------------------------------------------------ */
+.spell-card .spell-lines h3 {
+   font-size: inherit;
+   font-weight: 600;
+}
+
+.spell-card .spell-lines ul {
+   list-style: none;
+   display: block;
+}
+
+/* Hanging indent: the marker (✦ / ❖) stays outside the wrapped text */
+.spell-card .spell-lines li {
+   padding-left: 1.4em;
+   text-indent: -1.4em;
+}
+
+.spell-card .spell-gap {
+   height: var(--spell-line);
+}
+
+.spell-card .spell-desc {
+   white-space: pre-line;
+}
+
+.spell-card .spell-desc::first-letter {
+   font-family: var(--spell-font-title);
+   font-size: 1.9em;
+   line-height: 1;
+   color: var(--spell-accent);
+}
+
+.spell-card .spell-warn {
+   color: var(--spell-warn);
+}
+
+.spell-card .spell-upcast {
+   font-style: italic;
+}
+
+/* --- 4.3 Collapse to two lines -------------------------------------------- */
+.spell-card .spell-text {
+   position: relative;
+}
+
+.spell-card .spell-lines--collapsed {
+   max-height: calc(var(--spell-line) * 2);
+   overflow: hidden;
+}
+
+.spell-card .spell-more {
+   position: absolute;
+   right: 0;
+   bottom: 2px; /* do not cover the ruled line */
+   height: calc(var(--spell-line) - 2px);
+   padding: 0 0.25rem 0 2.5rem;
+   border: 0;
+   background: linear-gradient(to right, transparent, var(--spell-paper) 55%);
+   color: var(--spell-ink);
+   font-size: var(--size-xl);
+   font-weight: 700;
+   line-height: 1;
+   cursor: pointer;
+}
+
+.spell-card .spell-less {
+   display: block;
+   margin: 0.25rem 0 0 auto;
+   padding: 0;
+   border: 0;
+   background: none;
+   color: var(--spell-ink);
+   font-family: var(--spell-font-label);
+   font-style: italic;
+   font-size: var(--size-sm);
+   opacity: 0.8;
+   cursor: pointer;
+}
+
+.spell-card .spell-more:hover,
+.spell-card .spell-less:hover {
+   color: var(--spell-accent);
+   opacity: 1;
+}
+
+/* ==========================================================================
+   5. STAT TILES
+   ========================================================================== */
+
+/* --- 5.1 Grid and tile --------------------------------------------------- */
+.spell-card .spell-tiles {
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   gap: 1.1rem 1.25rem;
+   margin: 1.5rem 0 0.5rem;
+}
+
+.spell-card .spell-tile {
+   display: flex;
+   flex-direction: column;
+   min-height: 5rem;
+   padding: 0.3rem 0.75rem 0.7rem;
+   border: 3px solid var(--spell-ink);
+   background: var(--spell-plate);
+   box-shadow: var(--shadow-hard);
+}
+
+.spell-card .spell-tile dt {
+   margin: 0;
+   font-family: var(--spell-font-label);
+   font-style: italic;
+   font-size: var(--size-sm);
+   opacity: 0.8;
+}
+
+.spell-card .spell-tile dd {
+   flex: 1;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   margin: 0;
+   text-align: center;
+   font-size: var(--size-md);
+}
+
+/* --- 5.2 Components tile (words / hands icons) --------------------------- */
+.spell-card .spell-tile--wide {
+   grid-column: 1 / -1;
+}
+
+.spell-card .spell-components {
+   gap: 2.5rem;
+}
+
+.spell-card .spell-component {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+}
+
+.spell-card .spell-component img {
+   width: 3.5rem;
+   height: 3.5rem;
+   object-fit: contain;
+}
+
+/* ==========================================================================
+   6. ADMIN: HOLDERS
+   Markup: HolderEditor.tsx, rendered as a direct <section> of the card.
+   ========================================================================== */
+
+/* --- 6.1 Section and list ------------------------------------------------ */
+.spell-card > section {
+   margin-top: 1.5rem;
+   padding-top: 1rem;
+   border-top: 4px double var(--spell-ink);
+}
+
+.spell-card > section h3 {
+   margin: 0 0 0.5rem;
+   padding: 0;
+   text-align: left;
+}
+
+.spell-card > section ul {
+   list-style: none;
+   margin: 0;
+   padding: 0;
+   display: flex;
+   flex-direction: column;
+   gap: 0.35rem;
+}
+
+.spell-card > section li {
+   margin: 0;
+   padding: 0;
+}
+
+/* --- 6.2 Rows and add form ----------------------------------------------- */
+.spell-card .holder-row {
+   display: flex;
+   align-items: center;
+   gap: 0.5rem;
+}
+
+.spell-card .holder-row > span {
+   flex: 1;
+   min-width: 0;
+}
+
+.spell-card .holder-add {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: center;
+   gap: 0.5rem;
+   margin-top: 0.75rem;
+}
+
+.spell-card .holder-add select {
+   flex: 1 1 11rem;
+   min-width: 0;
+}
+
+.spell-card .holder-add button {
+   flex: none;
+}
+
+/* --- 6.3 Inputs ---------------------------------------------------------- */
+.spell-card .spell-stat {
+   border: var(--border);
+   border-radius: 4px;
+   background: var(--spell-plate);
+}
+
+.spell-card input[type="number"] {
+   width: 4.5rem;
+   min-width: 0;
+   box-sizing: border-box;
+   appearance: textfield;
+}
+
+.spell-card input[type="number"]::-webkit-inner-spin-button,
+.spell-card input[type="number"]::-webkit-outer-spin-button {
+   -webkit-appearance: none;
+   margin: 0;
+}
+
+/* ==========================================================================
+   7. SHARED BUTTONS
+   Used inside the card (holder editor) and in the SpellList type filters,
+   so they rely on global tokens only.
+   ========================================================================== */
+
+/* --- 7.1 Base and pressed ------------------------------------------------ */
+.spell-toggle {
+   border: var(--border);
+   border-radius: 6px;
+   background: var(--bg-0);
+   color: var(--foreground);
+}
+
+.spell-toggle[aria-pressed="true"] {
+   background: var(--accent);
+   color: var(--bg-0);
+}
+
+/* --- 7.2 Hover ----------------------------------------------------------- */
+.spell-toggle:hover:not([aria-pressed="true"]) {
+   background: var(--bg-1);
+}
+
+/* ==========================================================================
+   8. ACCESSIBILITY
+   ========================================================================== */
+
+/* --- 8.1 Focus ------------------------------------------------------------ */
+.spell-card button:focus-visible,
+.spell-toggle:focus-visible {
+   outline: 3px solid var(--spell-accent, var(--accent));
+   outline-offset: 2px;
+}
+
+/* --- 8.2 Reduced motion ---------------------------------------------------
+   Disables card color transitions and the switch hover scale.
+   ------------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+   .spell-card,
+   .spell-card .spell-side-btn {
+      transition: none;
+   }
+
+   .spell-card .spell-side-btn:hover {
+      transform: none;
+   }
+}

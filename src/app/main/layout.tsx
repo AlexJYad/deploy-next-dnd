@@ -1,6 +1,7 @@
 import Header from "@/components/Header/Header";
 import { getSession } from "@/lib/getSession";
 import { redirect } from "next/navigation";
+import Footer from "@/components/Footer/Footer";
 
 export default async function MainLayout({
    children,
@@ -21,6 +22,7 @@ export default async function MainLayout({
                {children}
             </main>
          </div>
+         <Footer />
       </>
    );
 }
