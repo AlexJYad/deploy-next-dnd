@@ -16,12 +16,7 @@ export default function Header({ user }) {
 
    const plainLinks = [{ href: "/main", label: "Главная" }];
 
-   const trailingLinks = [
-      { href: "/main/about", label: "Разработка" },
-      ...(user?.role === "admin" ?
-         [{ href: "/main/admin/characters", label: "Мастерская" }]
-      :  []),
-   ];
+   const trailingLinks = [{ href: "/main/about", label: "Разработка" }];
 
    const dropdowns = [
       // {
@@ -65,11 +60,7 @@ export default function Header({ user }) {
          key: "spells",
          label: "Заклинания",
          basePath: "/main/spells",
-         items: [
-            { href: "/main/spells", label: "Все заклинания" },
-            { href: "/main/spells#schools", label: "Школы магии" },
-            { href: "/main/spells#tiers", label: "Уровни/тиры" },
-         ],
+         items: [{ href: "/main/spells", label: "Все заклинания" }],
       },
       {
          key: "profile",
@@ -80,6 +71,19 @@ export default function Header({ user }) {
             { href: "/main/backstory", label: "Предыстория" },
          ],
       },
+      ...(user?.role === "admin" ?
+         [
+            {
+               key: "workshop",
+               label: "Мастерская",
+               basePath: "/main/admin",
+               items: [
+                  { href: "/main/admin/characters", label: "Персонажи" },
+                  { href: "/main/admin/spells", label: "Заклинания" },
+               ],
+            },
+         ]
+      :  []),
    ];
 
    function closeAll() {
@@ -116,7 +120,6 @@ export default function Header({ user }) {
                   fill="none"
                   aria-hidden="true"
                >
-                  {/* закрашенные грани */}
                   <g fill="currentColor" stroke="none">
                      <path d="M16 8 23 21H9Z" />
                      <path d="M16 2V8L4 9Z" />
@@ -124,7 +127,6 @@ export default function Header({ user }) {
                      <path d="M9 21 4 23 16 30Z" />
                   </g>
 
-                  {/* контур */}
                   <g
                      stroke="currentColor"
                      strokeWidth="1.8"
@@ -155,7 +157,9 @@ export default function Header({ user }) {
                ))}
 
                {dropdowns.map((menu) => {
-                  const isActive = pathname === menu.basePath;
+                  const isActive =
+                     pathname === menu.basePath ||
+                     pathname.startsWith(`${menu.basePath}/`);
                   const isOpen = openMenu === menu.key;
                   return (
                      <div className="header-dropdown" key={menu.key}>

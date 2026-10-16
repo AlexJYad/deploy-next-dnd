@@ -93,35 +93,33 @@ export default function SpellCard({
                ref={textRef}
                className={`spell-lines${open ? "" : " spell-lines--collapsed"}`}
             >
-               <div className="spell-lines">
-                  <p className="spell-desc">{v.description}</p>
+               <p className="spell-desc">{v.description}</p>
 
-                  {v.actions.length > 0 && (
-                     <>
-                        <div className="spell-gap" aria-hidden />
-                        <h3>Доступные действия:</h3>
-                        <ul>
-                           {v.actions.map((a) => (
-                              <li key={a}>✦ {a}</li>
-                           ))}
-                        </ul>
-                     </>
-                  )}
-
-                  {v.restrictions.length > 0 && (
+               {v.actions.length > 0 && (
+                  <>
+                     <div className="spell-gap" aria-hidden />
+                     <h3>Доступные действия:</h3>
                      <ul>
-                        {v.restrictions.map((r) => (
-                           <li key={r} className="spell-warn">
-                              ❖ {r}
-                           </li>
+                        {v.actions.map((a) => (
+                           <li key={a}>✦ {a}</li>
                         ))}
                      </ul>
-                  )}
+                  </>
+               )}
 
-                  {v.upcast && (
-                     <p className="spell-upcast">Усиление: {v.upcast}</p>
-                  )}
-               </div>
+               {v.restrictions.length > 0 && (
+                  <ul>
+                     {v.restrictions.map((r) => (
+                        <li key={r} className="spell-warn">
+                           ❖ {r}
+                        </li>
+                     ))}
+                  </ul>
+               )}
+
+               {v.upcast && (
+                  <p className="spell-upcast">Усиление: {v.upcast}</p>
+               )}
             </div>
             {clipped && !open && (
                <button
