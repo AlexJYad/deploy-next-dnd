@@ -279,9 +279,11 @@ export type Database = {
           id: string
           level: number
           mana_cost: number
+          material: boolean
           range_cells: number | null
           range_kind: Database["public"]["Enums"]["range_kind"] | null
           restrictions: string[]
+          runic: boolean
           side: Database["public"]["Enums"]["spell_side"]
           somatic: boolean
           spell_id: string
@@ -302,9 +304,11 @@ export type Database = {
           id?: string
           level?: number
           mana_cost?: number
+          material?: boolean
           range_cells?: number | null
           range_kind?: Database["public"]["Enums"]["range_kind"] | null
           restrictions?: string[]
+          runic?: boolean
           side: Database["public"]["Enums"]["spell_side"]
           somatic?: boolean
           spell_id: string
@@ -325,9 +329,11 @@ export type Database = {
           id?: string
           level?: number
           mana_cost?: number
+          material?: boolean
           range_cells?: number | null
           range_kind?: Database["public"]["Enums"]["range_kind"] | null
           restrictions?: string[]
+          runic?: boolean
           side?: Database["public"]["Enums"]["spell_side"]
           somatic?: boolean
           spell_id?: string

@@ -186,6 +186,22 @@ function VariantFields({
                />
                Руки
             </label>
+            <label className="sf-check">
+               <input
+                  type="checkbox"
+                  name={n("material")}
+                  defaultChecked={v?.material}
+               />
+               Предмет
+            </label>
+            <label className="sf-check">
+               <input
+                  type="checkbox"
+                  name={n("runic")}
+                  defaultChecked={v?.runic}
+               />
+               Рунический
+            </label>
          </div>
 
          <Field label="Доступные действия (по одному в строке)" wide>
@@ -262,7 +278,6 @@ export default function SpellForm({ spell }: { spell?: SpellFormData }) {
             ))}
          </div>
 
-         {/* обе панели всегда в DOM, чтобы их поля попали в FormData */}
          {SIDES.map((side) => (
             <div
                key={side}

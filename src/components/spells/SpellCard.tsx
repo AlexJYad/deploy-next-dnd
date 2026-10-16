@@ -14,6 +14,7 @@ import {
 import HolderEditor, { type CharacterOption } from "./HolderEditor";
 import "./SpellCard.css";
 import { useEffect, useRef, useState } from "react";
+import RunicText from "./RunicText";
 
 export default function SpellCard({
    spell,
@@ -65,7 +66,9 @@ export default function SpellCard({
          className={`spell-card${badge ? " spell-card--flag" : ""}`}
       >
          <header className="spell-head">
-            <h2 className="spell-title">{spell.name}</h2>
+            <h2 className="spell-title" title={spell.name}>
+               <RunicText enabled={v.runic} text={spell.name} />
+            </h2>
 
             {other && (
                <button
@@ -93,7 +96,13 @@ export default function SpellCard({
                ref={textRef}
                className={`spell-lines${open ? "" : " spell-lines--collapsed"}`}
             >
-               <p className="spell-desc">{v.description}</p>
+               <p className="spell-desc">
+                  <RunicText
+                     enabled={v.runic}
+                     text={v.description}
+                     mode="reveal"
+                  />
+               </p>
 
                {v.actions.length > 0 && (
                   <>
@@ -147,16 +156,20 @@ export default function SpellCard({
             {stats.map(([label, value]) => (
                <div key={label} className="spell-tile">
                   <dt>{label}</dt>
-                  <dd>{value}</dd>
+                  <dd>
+                     <RunicText enabled={v.runic} text={value} />
+                  </dd>
                </div>
             ))}
 
-            {(v.verbal || v.somatic) && (
+            {(v.verbal || v.somatic || v.material) && (
                <div className="spell-tile spell-tile--wide">
                   <dt>Компоненты</dt>
                   <dd className="spell-components">
                      {v.verbal && (
-                        <span className="spell-component">
+                        <span
+                           className={`spell-component${v.runic ? " spell-component--flicker" : ""}`}
+                        >
                            <Image
                               src="/images/spells/verbal.webp"
                               alt=""
@@ -166,9 +179,23 @@ export default function SpellCard({
                         </span>
                      )}
                      {v.somatic && (
-                        <span className="spell-component">
+                        <span
+                           className={`spell-component${v.runic ? " spell-component--flicker" : ""}`}
+                        >
                            <Image
                               src="/images/spells/somatic.webp"
+                              alt=""
+                              width={64}
+                              height={64}
+                           />
+                        </span>
+                     )}
+                     {v.material && (
+                        <span
+                           className={`spell-component${v.runic ? " spell-component--flicker" : ""}`}
+                        >
+                           <Image
+                              src="/images/spells/material.webp"
                               alt=""
                               width={64}
                               height={64}

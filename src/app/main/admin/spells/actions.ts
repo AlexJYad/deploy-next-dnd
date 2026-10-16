@@ -93,6 +93,8 @@ function parseVariant(
          range_cells: rangeKind === "distance" ? rangeCells : null,
          verbal: flag("verbal"),
          somatic: flag("somatic"),
+         material: flag("material"),
+         runic: flag("runic"),
          duration_turns: turns,
          concentration: flag("concentration"),
          actions: lines("actions"),
@@ -125,8 +127,9 @@ export async function saveSpell(fd: FormData): Promise<FormState> {
       return { error: "Нужна хотя бы одна версия: светлая или тёмная" };
    }
 
-   let spellId = id;
-   if (spellId) {
+   let spellId: string;
+   if (id) {
+      spellId = id;
       const { error } = await supabaseAdmin
          .from("spells")
          .update({ name, tags })
@@ -162,7 +165,7 @@ export async function saveSpell(fd: FormData): Promise<FormState> {
    if (deleteError) return { error: deleteError.message };
 
    revalidatePath("/spells");
-   revalidatePath("/main/admin/spells");
+   revalidatePath("/main/spells");
    redirect("/main/admin/spells");
 }
 
@@ -173,6 +176,6 @@ export async function deleteSpell(id: string): Promise<FormState> {
    if (error) return { error: error.message };
 
    revalidatePath("/spells");
-   revalidatePath("/main/admin/spells");
+   revalidatePath("/main/spells");
    return {};
 }

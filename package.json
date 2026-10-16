@@ -10,6 +10,7 @@
       "gen-types": "supabase gen types typescript --project-id mmwmxohfqbjnywsupfgh > src/lib/database.types.ts"
    },
    "dependencies": {
+      "@fontsource/noto-sans-old-persian": "^5.3.0",
       "@supabase/supabase-js": "^2.106.2",
       "bcrypt": "^6.0.0",
       "bcryptjs": "^3.0.3",
