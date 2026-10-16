@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      character_spells: {
+        Row: {
+          character_id: number
+          skill: number | null
+          variant_id: string
+        }
+        Insert: {
+          character_id: number
+          skill?: number | null
+          variant_id: string
+        }
+        Update: {
+          character_id?: number
+          skill?: number | null
+          variant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_spells_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_spells_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "spell_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       characters: {
         Row: {
           age: number | null
@@ -232,6 +265,107 @@ export type Database = {
           },
         ]
       }
+      spell_variants: {
+        Row: {
+          actions: string[]
+          area_shape: Database["public"]["Enums"]["area_shape"] | null
+          area_size: number | null
+          cast_time: string | null
+          concentration: boolean
+          description: string
+          duration_turns: number | null
+          effect_formula: string | null
+          effect_kind: Database["public"]["Enums"]["effect_kind"] | null
+          id: string
+          level: number
+          mana_cost: number
+          range_cells: number | null
+          range_kind: Database["public"]["Enums"]["range_kind"] | null
+          restrictions: string[]
+          side: Database["public"]["Enums"]["spell_side"]
+          somatic: boolean
+          spell_id: string
+          type: Database["public"]["Enums"]["spell_type"]
+          upcast: string | null
+          verbal: boolean
+        }
+        Insert: {
+          actions?: string[]
+          area_shape?: Database["public"]["Enums"]["area_shape"] | null
+          area_size?: number | null
+          cast_time?: string | null
+          concentration?: boolean
+          description?: string
+          duration_turns?: number | null
+          effect_formula?: string | null
+          effect_kind?: Database["public"]["Enums"]["effect_kind"] | null
+          id?: string
+          level?: number
+          mana_cost?: number
+          range_cells?: number | null
+          range_kind?: Database["public"]["Enums"]["range_kind"] | null
+          restrictions?: string[]
+          side: Database["public"]["Enums"]["spell_side"]
+          somatic?: boolean
+          spell_id: string
+          type: Database["public"]["Enums"]["spell_type"]
+          upcast?: string | null
+          verbal?: boolean
+        }
+        Update: {
+          actions?: string[]
+          area_shape?: Database["public"]["Enums"]["area_shape"] | null
+          area_size?: number | null
+          cast_time?: string | null
+          concentration?: boolean
+          description?: string
+          duration_turns?: number | null
+          effect_formula?: string | null
+          effect_kind?: Database["public"]["Enums"]["effect_kind"] | null
+          id?: string
+          level?: number
+          mana_cost?: number
+          range_cells?: number | null
+          range_kind?: Database["public"]["Enums"]["range_kind"] | null
+          restrictions?: string[]
+          side?: Database["public"]["Enums"]["spell_side"]
+          somatic?: boolean
+          spell_id?: string
+          type?: Database["public"]["Enums"]["spell_type"]
+          upcast?: string | null
+          verbal?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "spell_variants_spell_id_fkey"
+            columns: ["spell_id"]
+            isOneToOne: false
+            referencedRelation: "spells"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      spells: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          tags: string[]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          tags?: string[]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          tags?: string[]
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string | null
@@ -267,7 +401,11 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      area_shape: "circle" | "cone" | "line" | "cube"
+      effect_kind: "damage" | "heal"
+      range_kind: "self" | "touch" | "sight" | "distance"
+      spell_side: "light" | "dark"
+      spell_type: "attack" | "defense" | "buff" | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -283,12 +421,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -312,11 +450,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -337,11 +475,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -362,11 +500,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -379,11 +517,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -394,6 +532,12 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      area_shape: ["circle", "cone", "line", "cube"],
+      effect_kind: ["damage", "heal"],
+      range_kind: ["self", "touch", "sight", "distance"],
+      spell_side: ["light", "dark"],
+      spell_type: ["attack", "defense", "buff", "other"],
+    },
   },
 } as const
